@@ -27,6 +27,10 @@ wss.on('connection', (ws) => {
   clients.add(ws);
   console.log('New client connected. Total clients:', clients.size);
 
+  ws.on('message', function (message) {
+    console.log("Received message from client: "+ message);
+  })
+
   // Handle client disconnection
   ws.on('close', () => {
     clients.delete(ws);
@@ -52,16 +56,13 @@ app.post('/broadcast', (req, res) => {
   res.json({ message: 'Data broadcasted successfully', data });
 });
 
+
 // Broadcast function
 function broadcast(data) {
   const payload = JSON.stringify(data);
-  console.log(clients);
   clients.forEach((client) => {
-    console.log('client.readyState');
-    if (client.readyState == WebSocket.OPEN) {
-      console.log("client.readyState == WebSocket.OPEN is True");
+    if (client.readyState === WebSocket.OPEN) {
       client.send(payload);
-    //   console.log("Data broadcasted successfully");
     }
   });
 }
